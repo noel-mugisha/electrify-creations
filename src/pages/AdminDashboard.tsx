@@ -16,8 +16,11 @@ import {
   UserPlus,
   Settings,
   BarChart3,
-  PieChart
+  PieChart,
+  LogOut
 } from "lucide-react";
+import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart as RechartsPieChart, Cell, ResponsiveContainer, Pie } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -26,6 +29,44 @@ import { Badge } from "@/components/ui/badge";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Chart data
+  const revenueData = [
+    { month: "Jan", revenue: 4000, orders: 240, users: 400 },
+    { month: "Feb", revenue: 3000, orders: 139, users: 300 },
+    { month: "Mar", revenue: 2000, orders: 980, users: 200 },
+    { month: "Apr", revenue: 2780, orders: 390, users: 278 },
+    { month: "May", revenue: 1890, orders: 480, users: 189 },
+    { month: "Jun", revenue: 2390, orders: 380, users: 239 },
+    { month: "Jul", revenue: 3490, orders: 430, users: 349 }
+  ];
+
+  const categoryData = [
+    { name: "Electronics", value: 400, fill: "hsl(var(--primary))" },
+    { name: "Clothing", value: 300, fill: "hsl(var(--secondary))" },
+    { name: "Home & Garden", value: 200, fill: "hsl(var(--accent))" },
+    { name: "Sports", value: 150, fill: "hsl(var(--muted))" }
+  ];
+
+  const chartConfig = {
+    revenue: {
+      label: "Revenue",
+      color: "hsl(var(--primary))"
+    },
+    orders: {
+      label: "Orders", 
+      color: "hsl(var(--secondary))"
+    },
+    users: {
+      label: "Users",
+      color: "hsl(var(--accent))"
+    }
+  };
+
+  const handleLogout = () => {
+    // Handle logout logic here
+    console.log("Admin logged out");
+  };
 
   // Mock data for demonstration
   const stats = [
@@ -124,6 +165,15 @@ const AdminDashboard = () => {
                   {item.label}
                 </button>
               ))}
+              
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all text-destructive hover:bg-destructive/10 hover:text-destructive mt-4"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </button>
             </nav>
           </div>
         </div>
@@ -174,15 +224,30 @@ const AdminDashboard = () => {
                       <Activity className="h-5 w-5 text-primary" />
                       Revenue Overview
                     </CardTitle>
-                    <CardDescription>Monthly revenue for the last 6 months</CardDescription>
+                    <CardDescription>Monthly revenue trends over the last 7 months</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="h-64 bg-muted/20 rounded-lg flex items-center justify-center">
-                      <div className="text-center space-y-2">
-                        <BarChart3 className="h-12 w-12 text-primary mx-auto" />
-                        <p className="text-muted-foreground">Chart visualization would go here</p>
-                      </div>
-                    </div>
+                    <ChartContainer config={chartConfig} className="h-64">
+                      <AreaChart data={revenueData}>
+                        <defs>
+                          <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Area 
+                          type="monotone" 
+                          dataKey="revenue" 
+                          stroke="hsl(var(--primary))" 
+                          fillOpacity={1} 
+                          fill="url(#fillRevenue)" 
+                        />
+                      </AreaChart>
+                    </ChartContainer>
                   </CardContent>
                 </Card>
 
@@ -210,6 +275,76 @@ const AdminDashboard = () => {
                         </div>
                       ))}
                     </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Additional Charts Row */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Orders & Users Chart */}
+                <Card className="hover-lift">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5 text-primary" />
+                      Orders & Users Growth
+                    </CardTitle>
+                    <CardDescription>Monthly orders and user acquisition</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ChartContainer config={chartConfig} className="h-64">
+                      <LineChart data={revenueData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <ChartLegend content={<ChartLegendContent />} />
+                        <Line 
+                          type="monotone" 
+                          dataKey="orders" 
+                          stroke="hsl(var(--secondary))" 
+                          strokeWidth={3}
+                          dot={{ fill: "hsl(var(--secondary))", strokeWidth: 2, r: 4 }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="users" 
+                          stroke="hsl(var(--accent))" 
+                          strokeWidth={3}
+                          dot={{ fill: "hsl(var(--accent))", strokeWidth: 2, r: 4 }}
+                        />
+                      </LineChart>
+                    </ChartContainer>
+                  </CardContent>
+                </Card>
+
+                {/* Category Distribution */}
+                <Card className="hover-lift">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <PieChart className="h-5 w-5 text-primary" />
+                      Sales by Category
+                    </CardTitle>
+                    <CardDescription>Product category distribution</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ChartContainer config={chartConfig} className="h-64">
+                        <RechartsPieChart>
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Pie
+                          data={categoryData}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {categoryData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Pie>
+                        <ChartLegend content={<ChartLegendContent />} />
+                      </RechartsPieChart>
+                    </ChartContainer>
                   </CardContent>
                 </Card>
               </div>

@@ -16,7 +16,8 @@ import {
   Calendar,
   Download,
   Filter,
-  Search
+  Search,
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +27,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState("profile");
+
+  const handleLogout = () => {
+    // Handle logout logic here
+    console.log("User logged out");
+  };
 
   // Mock user data
   const userInfo = {
@@ -167,6 +173,15 @@ const UserDashboard = () => {
                   {item.label}
                 </button>
               ))}
+              
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all text-destructive hover:bg-destructive/10 hover:text-destructive mt-4"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </button>
             </nav>
           </div>
         </div>
