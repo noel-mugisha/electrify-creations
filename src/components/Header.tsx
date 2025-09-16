@@ -99,10 +99,19 @@ const Header = () => {
               <span>EN | USD</span>
             </div>
 
+            {/* Admin Dashboard Link (hidden for regular users) */}
+            <Link to="/admin" className="hidden md:block">
+              <Button variant="outline" size="sm" className="text-xs">
+                Admin
+              </Button>
+            </Link>
+
             {/* User Account */}
-            <Button variant="ghost" size="icon" className="hover-lift">
-              <User className="h-5 w-5" />
-            </Button>
+            <Link to="/dashboard">
+              <Button variant="ghost" size="icon" className="hover-lift">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
 
             {/* Wishlist */}
             <Button variant="ghost" size="icon" className="hover-lift relative">
